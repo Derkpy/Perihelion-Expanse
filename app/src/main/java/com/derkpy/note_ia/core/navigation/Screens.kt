@@ -13,3 +13,9 @@ object SignUp
 
 @Serializable
 object Home
+
+@Serializable
+data class Detail(val id: String)
+
+@Serializable
+object Notification

@@ -1,107 +1,158 @@
 package com.derkpy.note_ia.ui.home.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.derkpy.note_ia.R
 import com.derkpy.note_ia.ui.home.vm.HomeViewModel
-import com.derkpy.note_ia.ui.theme.primaryTwoDark
-import com.derkpy.note_ia.ui.theme.secondaryOneDark
-import com.derkpy.note_ia.ui.theme.tertiaryTwoDark
-import com.derkpy.note_ia.ui.theme.white
+import com.derkpy.note_ia.ui.theme.primaryOneLigth
+import com.derkpy.note_ia.ui.theme.primaryTwoLigth
 import org.koin.androidx.compose.koinViewModel
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.derkpy.note_ia.ui.home.contract.HomeEvent
+import com.derkpy.note_ia.ui.home.ui.components.bottomSheet.BottomSheetComponent
+import com.derkpy.note_ia.ui.home.ui.components.DividerLineWithText
+import com.derkpy.note_ia.ui.home.ui.components.NoteItem
+import com.derkpy.note_ia.ui.home.ui.components.SpeedDialFAB
+import com.derkpy.note_ia.ui.home.ui.components.TaskItem
+import com.derkpy.note_ia.ui.home.ui.components.bottomSheet.SheetMode
+import com.derkpy.note_ia.ui.home.ui.components.bottomSheet.contentBottomSheet.NoteTextFields
+import com.derkpy.note_ia.ui.home.ui.components.bottomSheet.contentBottomSheet.TaskTextFields
+import com.derkpy.note_ia.ui.theme.white
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = koinViewModel()){
+fun HomeScreen(viewModel: HomeViewModel = koinViewModel(), navigateToDetail: (String) -> Unit){
 
-    HomeContent(viewModel)
+    HomeContent(viewModel, navigateToDetail)
+
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeContent(viewModel: HomeViewModel) {
+fun HomeContent(viewModel: HomeViewModel, navigateToDetail: (String) -> Unit) {
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(secondaryOneDark),
-        horizontalAlignment = Alignment.CenterHorizontally
-
-    ) {
-        Spacer(modifier = Modifier.weight(1f))
+    val sheetState = rememberModalBottomSheetState()
+    val showSheet = viewModel.showSheet.collectAsState().value
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
 
-        Row {
+    Scaffold(
+        floatingActionButton = {
 
-            ButtonBackSession(viewModel)
+            SpeedDialFAB(viewModel)
 
-            Spacer(modifier = Modifier.weight(1f))
+        }) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(primaryOneLigth),
+                contentAlignment = Alignment.Center
+            ){
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row {
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        painter = painterResource(R.drawable.ic_miscellaneous_services_24),
+                        contentDescription = "",
+                        tint = primaryTwoLigth,
+                        modifier = Modifier
+                            .padding(top = 40.dp)
+                            .clickable() { viewModel.closeSession() }
+                    )
+                }
+
+                Column(modifier = Modifier.padding(innerPadding)) {
+
+                    DividerLineWithText("NOTAS")
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(.5f)
+                            .fillMaxWidth()
+                    ) {
+                        items(state.listNotes) { note ->
+                            NoteItem(noteModel = note)
+                        }
+                    }
+
+                    DividerLineWithText("TAREAS")
+
+                    LazyHorizontalGrid(
+                        modifier = Modifier
+                            .weight(.45f)
+                            .fillMaxWidth(),
+                        rows = GridCells.Adaptive(minSize = 120.dp),
+                        contentPadding = PaddingValues(9.dp),
+                        verticalArrangement = Arrangement.spacedBy(9.dp)
+                    ) {
+                        items(state.listTasks){ task ->
+                            TaskItem(task = task, onClick = { navigateToDetail(task.id) })
+                        }
+                    }
+                    Spacer(modifier = Modifier.weight(.05f))
+                }
+            }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        if (showSheet) {
 
-        Text(
-            text = "Home Screen",
-            color = primaryTwoDark,
-            fontSize = 20.sp
-        )
+            ModalBottomSheet(
 
-        Spacer(modifier = Modifier.weight(1f))
+                onDismissRequest = { viewModel.toggleBottomSheetVisibility() },
+                sheetState = sheetState,
+                containerColor = white
 
-        ButtonAddTask()
+            ){
+               BottomSheetComponent(state.modeSheet,
+                    onSave = {
 
-        Spacer(modifier = Modifier.weight(1f))
-    }
-}
+                        if (state.modeSheet == SheetMode.NOTE) {
+                            viewModel.onEvent(HomeEvent.SaveNote)
+                        }
+                        else {
+                            viewModel.onEvent(HomeEvent.SaveTask)
+                        }
+                    }
+               ) {
+                   if (state.modeSheet == SheetMode.NOTE) {
+                       NoteTextFields(viewModel)
+                       } else {
+                           TaskTextFields(viewModel)
+                       }
+               }
+            }
 
-@Composable
-fun ButtonAddTask(){
-
-    Button(onClick = { /*TODO*/ },
-            modifier = Modifier.fillMaxWidth()
-                .height(40.dp)
-                .padding(horizontal = 10.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = white)
-
-        ) {
-
-        Image(painter = painterResource(R.drawable.ic_bookmark_add_24),
-            contentDescription = "Add Task"
-
-        )
-    }
-}
-
-@Composable
-fun ButtonBackSession(viewModel: HomeViewModel) {
-
-
-
-    Button(onClick = {
-
-        viewModel.closeSession()
-
-    }, modifier = Modifier.fillMaxWidth()
-        .height(40.dp)
-        .padding(horizontal = 20.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = tertiaryTwoDark
-        )
-        ) {
-
+        }
     }
 }

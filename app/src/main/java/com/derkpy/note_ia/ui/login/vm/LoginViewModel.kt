@@ -1,13 +1,19 @@
 package com.derkpy.note_ia.ui.login.vm
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.derkpy.note_ia.domain.DataRepository
-import kotlinx.coroutines.delay
+import com.derkpy.note_ia.vo.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class LoginViewModel constructor(private val repository: DataRepository) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email.asStateFlow()
@@ -18,28 +24,32 @@ class LoginViewModel constructor(private val repository: DataRepository) : ViewM
     private val _loginEnable = MutableStateFlow(false)
     val loginEnable: StateFlow<Boolean> = _loginEnable.asStateFlow()
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
     fun onLoginChanged(email: String, password: String) {
         _email.value = email
         _password.value = password
         _loginEnable.value = isValidEmail(email) && isValidPassword(password)
     }
 
-    suspend fun onLoginSelected(user : String, password : String){
+    fun onLoginWithEmailAndPassword() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val loginResult = repository.requestLoginWithEmailAndPassword(user = _email.value, password = _password.value)
 
-        //_isLoading.value = true
+            if (loginResult != null) {
+                _uiState.update { it.copy(isSuccess = true) }
+            } else {
+                _uiState.update { it.copy(error = "Login failed. Please check your credentials.") }
+            }
 
-        repository.requestSing(user = user, password = password)
+            _uiState.update { it.copy(isLoading = false) }
+        }
+    }
 
-        //delay(4000)
-       // _isLoading.value = false
-
+    fun onNavigationDone() {
+        _uiState.update { it.copy(isSuccess = false, error = null) }
     }
 
     private fun isValidEmail(email: String): Boolean = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
     private fun isValidPassword(password: String): Boolean = password.length > 6
-
 }

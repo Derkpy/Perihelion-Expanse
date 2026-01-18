@@ -10,6 +10,11 @@ activityCompose = "1.11.0"
 composeBom = "2024.09.00"
 koin-bom = "4.1.0"
 
+mockk = "1.13.10"
+turbine = "1.2.1"
+kotlinx-coroutines-test= "1.7.3"
+truth = "1.1.5"
+
 firebasebom = "34.4.0"
 services = "4.4.4"
 crashlytics = "3.0.6"
@@ -17,10 +22,19 @@ navigation = "2.9.5"
 kotlinxSerialization = "1.8.1"
 corutinesPlayServices = "1.7.3"
 
+credentialManager = "1.6.0-beta03"
+googleId = "1.1.1"
+secretsGradlePlugin = "2.0.1"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -36,6 +50,7 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebasebom" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
 koin-core = { module = "io.insert-koin:koin-core" }
@@ -44,9 +59,14 @@ koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
 koin-test = { module = "io.insert-koin:koin-test" }
 
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization"}
 
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization"}
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "corutinesPlayServices"}
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test"}
+
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentialManager"}
+androidx-credentials-playservices-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentialManager"}
+google-id-client = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleId"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -55,4 +75,4 @@ googleServices = {id = "com.google.gms.google-services", version.ref = "services
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics"}
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrainsKotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
-
+secretsGradlePlugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradlePlugin"}
