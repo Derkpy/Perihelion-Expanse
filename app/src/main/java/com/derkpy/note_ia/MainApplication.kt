@@ -6,7 +6,9 @@ import com.derkpy.note_ia.di.dataRepositoryModule
 import com.derkpy.note_ia.di.dataSourceModule
 import com.derkpy.note_ia.di.firebaseModule
 import com.derkpy.note_ia.di.googleHelperModule
+import com.derkpy.note_ia.di.iaDataSourceModule
 import com.derkpy.note_ia.di.mainViewModule
+import com.derkpy.note_ia.di.networkModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -22,7 +24,9 @@ class MainApplication : Application(){
                 credentialManager,
                 dataRepositoryModule,
                 dataSourceModule,
+                iaDataSourceModule,
                 googleHelperModule,
+                networkModule,
                 mainViewModule
             )
         }

@@ -35,10 +35,9 @@ fun SpeedDialFAB (
     val expanded = viewModel.expanded.collectAsState().value
 
     Column(
-    horizontalAlignment = Alignment.End,
-    verticalArrangement = Arrangement.spacedBy(16.dp)
-    )
-    {
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         AnimatedVisibility(
             visible = expanded,
             enter = fadeIn() + slideInVertically(initialOffsetY = { it }),

@@ -1,10 +1,12 @@
 package com.derkpy.note_ia.ui.home.ui.components.bottomSheet
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -29,7 +31,8 @@ fun TextFieldComponent(viewModel: HomeViewModel, text: String, showTextField: Sh
         modifier = Modifier
             .fillMaxWidth()
             .clip(shape = CircleShape)
-            .padding(vertical = 10.dp),
+            .padding(vertical = 10.dp)
+            .height(50.dp),
         value = text,
         onValueChange = { newTex ->
             when (showTextField) {
@@ -49,11 +52,13 @@ fun TextFieldComponent(viewModel: HomeViewModel, text: String, showTextField: Sh
                 else -> { }
             } },
         colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = unselectedField,
-            focusedContainerColor = selectedField,
+            unfocusedContainerColor = selectedField,
+            focusedContainerColor = unselectedField,
             focusedTextColor = white,
             unfocusedTextColor = white
         ),
+        singleLine = true
+        ,
         keyboardOptions =
             if (showTextField == SheetMode.DESCRIPTION_NOTE)
                 KeyboardOptions(imeAction = ImeAction.Done) else
@@ -62,15 +67,17 @@ fun TextFieldComponent(viewModel: HomeViewModel, text: String, showTextField: Sh
             onDone = {
                 keyboardController?.hide()
             }),
-        label = {
+        placeholder = {
+
             when (showTextField) {
-                SheetMode.TITLE_NOTE -> "Titulo de la nota"
 
-                SheetMode.DESCRIPTION_NOTE -> "Descripción de la nota"
+                SheetMode.TITLE_NOTE -> Text("Titulo de la nota", color = white)
 
-                SheetMode.TITLE_TASK -> "Título de la tarea"
+                SheetMode.DESCRIPTION_NOTE -> Text("Descripción de la nota", color = white)
 
-                SheetMode.DESCRIPTION_TASK -> "Descripción de la tarea"
+                SheetMode.TITLE_TASK -> Text("Título de la tarea", color = white)
+
+                SheetMode.DESCRIPTION_TASK -> Text("Descripción de la tarea", color = white)
 
                 else -> { }
             }

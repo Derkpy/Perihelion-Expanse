@@ -1,5 +1,6 @@
 package com.derkpy.note_ia.data.repository
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import com.derkpy.note_ia.data.remote.google.GoogleHelper
@@ -144,29 +145,37 @@ class DataSourceImp(
         awaitClose { snapshotListener.remove() }
     }
 
-    override fun getTask(taskId: String): Flow<TaskModel> = callbackFlow{
+    override suspend fun getTask(taskId: String): TaskModel? = try {
 
         val uId = currentUser()?.uid ?: throw Exception("User not authenticated")
 
-        val taskCollection = firestore.collection("users")
+        val snapshot = firestore.collection("users")
             .document(uId)
             .collection("tasks")
             .document(taskId)
+            .get()
+            .await()
 
-        val snapshotListener = taskCollection.addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                close(error)
-                return@addSnapshotListener
-            }
-            if (snapshot != null) {
-                val task = snapshot.toObject(TaskModel::class.java)?.copy(id = snapshot.id)
+        snapshot.toObject(TaskModel::class.java)?.copy(id = snapshot.id)
 
-                if (task != null) {
-                    trySend(task)
-                }
-            }
-        }
-        awaitClose { snapshotListener.remove() }
+    } catch (e: Exception) {
+        throw e
+    }
+
+    @SuppressLint("SuspiciousIndentation")
+    override suspend fun updateTask(task: TaskModel): Result<String> = try {
+
+        val uId = currentUser()?.uid ?: throw Exception("User not authenticated")
+
+            firestore.collection("users")
+                .document(uId)
+                .collection("tasks")
+                .document(task.id)
+                .set(task)
+                .await()
+            Result.success("Task updated successfully")
+    } catch (e: Exception) {
+        Result.failure(e)
     }
 
 }

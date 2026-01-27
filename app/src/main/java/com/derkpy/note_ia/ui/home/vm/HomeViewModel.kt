@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class HomeViewModel constructor(private val repository: DataRepository) : ViewModel(){
 
@@ -125,7 +126,11 @@ class HomeViewModel constructor(private val repository: DataRepository) : ViewMo
                             TaskModel(
                                 title = title,
                                 description = description,
-                                content = content.split("\n").map { SubTaskModel(name = it) },
+                                content = content.split("\n").map { title ->
+                                    SubTaskModel(
+                                        id = UUID.randomUUID().toString(),
+                                        name = title
+                                    ) },
                                 date = System.currentTimeMillis()
                             )
                         )
@@ -162,6 +167,30 @@ class HomeViewModel constructor(private val repository: DataRepository) : ViewMo
                     it.copy(taskState = it.taskState.copy(title = event.title))
                 }
             }
+
+            HomeEvent.GenerateSubtasks -> {
+
+                _uiState.update { it.copy(isLoading = true) }
+
+                val title = _uiState.value.taskState.title
+
+                if (title.isBlank()) {
+                    _uiState.update { it.copy(error = "El título no puede estar vacío") }
+                    return
+                } else {
+                    viewModelScope.launch {
+
+                        val result = repository.generateContent("Crea una lista de subtareas para la tarea de: $title")
+
+                        result.onSuccess {
+                            _uiState.update { it.copy(taskState = it.taskState.copy(contentTask = result.toString())) }
+
+                        }.onFailure {
+                            _uiState.update { it.copy(error = result.toString()) }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -170,7 +199,6 @@ class HomeViewModel constructor(private val repository: DataRepository) : ViewMo
         _uiState.update { it.copy(isLoading = true) }
 
         val currentUser = repository.currentUser()?.uid
-
 
         viewModelScope.launch {
             repository.requestTasks(currentUser.toString()).collect { tasks ->

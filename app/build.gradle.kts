@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +9,15 @@ plugins {
     alias(libs.plugins.crashlytics)
     alias(libs.plugins.jetbrainsKotlinSerialization)
     alias(libs.plugins.secretsGradlePlugin)
+}
+
+val secrets = Properties()
+val secretsFile = rootProject.file("secrets.properties")
+if (secretsFile.exists()) {
+    secrets.load(FileInputStream(secretsFile))
+    println("✅ Secrets cargados: " + secrets.keys)
+}  else {
+    println("❌ ERROR: No encuentro el archivo en: " + secretsFile.absolutePath)
 }
 
 android {
@@ -22,6 +34,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "WEB_CLIENT_ID", "\"${secrets["WEB_CLIENT_ID"]}\"")
+        buildConfigField("String", "DEEPSEEK_API_KEY", "\"${secrets["DEEPSEEK_API_KEY"]}\"")
     }
 
     buildTypes {
@@ -51,6 +66,13 @@ secrets {
 }
 
 dependencies {
+
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.serialization)
+
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
@@ -94,8 +116,5 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-
-
-
 
 }

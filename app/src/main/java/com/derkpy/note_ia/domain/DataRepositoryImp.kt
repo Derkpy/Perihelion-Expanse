@@ -1,13 +1,17 @@
 package com.derkpy.note_ia.domain
 
 import android.content.Context
+import com.derkpy.note_ia.data.remote.deepseek.IADataSource
 import com.derkpy.note_ia.data.repository.DataSource
 import com.derkpy.note_ia.domain.model.NoteModel
 import com.derkpy.note_ia.domain.model.TaskModel
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
 
-class DataRepositoryImp(private val remoteData : DataSource) : DataRepository {
+class DataRepositoryImp(
+    private val remoteData : DataSource,
+    private val iAData : IADataSource)
+    : DataRepository {
 
     override suspend fun requestLoginWithEmailAndPassword(user: String, password: String): FirebaseUser? {
         return remoteData.loginWithEmailAndPassword(user, password)
@@ -47,5 +51,18 @@ class DataRepositoryImp(private val remoteData : DataSource) : DataRepository {
     override fun requestTasks(userId: String): Flow<List<TaskModel>> {
         return remoteData.getAllTasks(userId)
     }
+
+    override suspend fun getTask(taskId: String): TaskModel? {
+        return remoteData.getTask(taskId)
+    }
+
+    override suspend fun updateTask(task: TaskModel): Result<String> {
+        return remoteData.updateTask(task)
+    }
+
+    override suspend fun generateContent(userPrompt: String): Result<String> {
+        return iAData.generateContent(userPrompt)
+    }
+
 
 }

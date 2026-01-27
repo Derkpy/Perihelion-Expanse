@@ -99,7 +99,10 @@ fun Login(viewModel: LoginViewModel) {
         }
 
         if (uiState.isLoading) {
-            CircularProgressIndicator(color = tertiaryOneDark)
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+                color = tertiaryOneDark
+            )
         }
     }
 }

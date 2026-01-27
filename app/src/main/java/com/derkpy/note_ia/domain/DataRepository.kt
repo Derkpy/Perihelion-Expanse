@@ -26,4 +26,10 @@ interface DataRepository {
 
     fun requestTasks(userId : String) : Flow<List<TaskModel>>
 
+    suspend fun getTask(taskId: String) : TaskModel?
+
+    suspend fun updateTask(task: TaskModel) : Result<String>
+
+    suspend fun generateContent(userPrompt : String) : Result<String>
+
 }

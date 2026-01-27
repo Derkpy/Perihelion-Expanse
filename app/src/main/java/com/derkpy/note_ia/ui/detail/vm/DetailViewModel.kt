@@ -2,6 +2,7 @@ package com.derkpy.note_ia.ui.detail.vm
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.derkpy.note_ia.core.navigation.Detail
 import com.derkpy.note_ia.domain.DataRepository
@@ -11,10 +12,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class DetailViewModel constructor(
-    savedStateHandle: SavedStateHandle,
-    repository: DataRepository) : ViewModel() {
+    private val savedStateHandle: SavedStateHandle,
+    private val repository: DataRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailUiState())
     val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
@@ -26,25 +29,80 @@ class DetailViewModel constructor(
 
         when(event){
 
-            is DetailEvent.EditTask -> TODO()
+            is DetailEvent.EditTask -> {
+                _uiState.update { it.copy(isLoading = true) }
 
-            is DetailEvent.DescriptionChanged -> TODO()
+                viewModelScope.launch {
 
-            is DetailEvent.SubTaskChanged -> TODO()
+                    repository.updateTask(task = _uiState.value.task)
 
-            is DetailEvent.TitleChanged -> TODO()
+                }
 
-            is DetailEvent.StateTextFieldEnabled ->
-                _uiState.update { it.copy(
-                    enableTextField = true
-                ) }
+                _uiState.update {
+                    it.copy(
+                        enableTextField = false,
+                        isLoading = false
+                    )
+                }
+            }
 
+            is DetailEvent.DescriptionChanged -> {
+                _uiState.update { it.copy(task = it.task.copy(description = event.description)) }
+            }
+
+            is DetailEvent.SubTaskChanged -> {
+
+                val newSubtask = _uiState.value.task.content.map {
+                    if (it.id == event.subTask.id) event.subTask else it
+                }
+
+                _uiState.update { it.copy(task = it.task.copy(content = newSubtask)) }
+
+            }
+            is DetailEvent.TitleChanged -> {
+                _uiState.update { it.copy(task = it.task.copy(title = event.title)) }
+            }
+
+            is DetailEvent.StateTextFieldEnabled -> {
+
+                _uiState.update { it.copy(isLoading = true) }
+
+                _uiState.update {
+                    it.copy(
+                        enableTextField = event.enable,
+                        isLoading = false
+                    )
+                }
+            }
+
+            is DetailEvent.StateAddTask ->
+                _uiState.update {
+                    it.copy(addSubTask = event.enable)
+                }
         }
+    }
+
+    private fun getTask() {
+
+        _uiState.update { it.copy(isLoading = true) }
+
+        viewModelScope.launch {
+
+            val task = repository.getTask(noteId)
+
+            if (task != null) {
+                _uiState.update {
+                    it.copy(task = task)
+                }
+            }
+        }
+
+        _uiState.update { it.copy(isLoading = false) }
 
     }
 
-    fun getTask() {
-
+    init {
+        getTask()
     }
 
 }

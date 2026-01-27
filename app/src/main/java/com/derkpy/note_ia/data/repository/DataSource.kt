@@ -26,6 +26,8 @@ interface DataSource {
 
     fun getAllTasks(userId: String) : Flow<List<TaskModel>>
 
-    fun getTask(taskId: String) : Flow<TaskModel>
+    suspend fun getTask(taskId: String) : TaskModel?
+
+    suspend fun updateTask(task: TaskModel) : Result<String>
 
 }

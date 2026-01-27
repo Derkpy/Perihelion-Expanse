@@ -35,7 +35,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.derkpy.note_ia.ui.home.contract.HomeEvent
-import com.derkpy.note_ia.ui.home.ui.components.bottomSheet.BottomSheetComponent
+import com.derkpy.note_ia.ui.home.ui.components.bottomSheet.ButtomSheetComponent
 import com.derkpy.note_ia.ui.home.ui.components.DividerLineWithText
 import com.derkpy.note_ia.ui.home.ui.components.NoteItem
 import com.derkpy.note_ia.ui.home.ui.components.SpeedDialFAB
@@ -134,25 +134,27 @@ fun HomeContent(viewModel: HomeViewModel, navigateToDetail: (String) -> Unit) {
                 containerColor = white
 
             ){
-               BottomSheetComponent(state.modeSheet,
+                ButtomSheetComponent(
+                    state.modeSheet,
                     onSave = {
-
-                        if (state.modeSheet == SheetMode.NOTE) {
-                            viewModel.onEvent(HomeEvent.SaveNote)
-                        }
-                        else {
-                            viewModel.onEvent(HomeEvent.SaveTask)
-                        }
-                    }
-               ) {
-                   if (state.modeSheet == SheetMode.NOTE) {
-                       NoteTextFields(viewModel)
-                       } else {
-                           TaskTextFields(viewModel)
+                       if (state.modeSheet == SheetMode.NOTE) {
+                           viewModel.onEvent(HomeEvent.SaveNote)
                        }
+                       else {
+                           viewModel.onEvent(HomeEvent.SaveTask)
+                       }
+                            },
+                    generateContent = {
+                       viewModel.onEvent(HomeEvent.GenerateSubtasks)
+                    })
+                {
+                    if (state.modeSheet == SheetMode.NOTE) {
+                       NoteTextFields(viewModel)
+                    } else {
+                       TaskTextFields(viewModel)
+                    }
                }
             }
-
         }
     }
 }

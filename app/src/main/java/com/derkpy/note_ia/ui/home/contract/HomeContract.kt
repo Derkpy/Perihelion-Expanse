@@ -18,6 +18,7 @@ sealed class HomeEvent {
 
     object SaveNote : HomeEvent()
     object SaveTask : HomeEvent()
+    object GenerateSubtasks : HomeEvent()
 
 }
 
