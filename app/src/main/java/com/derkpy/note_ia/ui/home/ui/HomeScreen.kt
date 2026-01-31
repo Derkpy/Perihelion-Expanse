@@ -1,5 +1,10 @@
 package com.derkpy.note_ia.ui.home.ui
 
+import android.Manifest
+import android.os.Build
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +37,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.derkpy.note_ia.ui.home.contract.HomeEvent
@@ -47,6 +53,21 @@ import com.derkpy.note_ia.ui.theme.white
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = koinViewModel(), navigateToDetail: (String) -> Unit){
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Log.d("Permissions", "Notificaciones permitidas")
+        } else {
+            Log.d("Permissions", "Notificaciones denegadas")
+        }
+    }
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     HomeContent(viewModel, navigateToDetail)
 

@@ -1,6 +1,3 @@
-import java.util.Properties
-import java.io.FileInputStream
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -9,15 +6,6 @@ plugins {
     alias(libs.plugins.crashlytics)
     alias(libs.plugins.jetbrainsKotlinSerialization)
     alias(libs.plugins.secretsGradlePlugin)
-}
-
-val secrets = Properties()
-val secretsFile = rootProject.file("secrets.properties")
-if (secretsFile.exists()) {
-    secrets.load(FileInputStream(secretsFile))
-    println("✅ Secrets cargados: " + secrets.keys)
-}  else {
-    println("❌ ERROR: No encuentro el archivo en: " + secretsFile.absolutePath)
 }
 
 android {
@@ -34,9 +22,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField("String", "WEB_CLIENT_ID", "\"${secrets["WEB_CLIENT_ID"]}\"")
-        buildConfigField("String", "DEEPSEEK_API_KEY", "\"${secrets["DEEPSEEK_API_KEY"]}\"")
     }
 
     buildTypes {
@@ -78,6 +63,7 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.messaging)
 
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)

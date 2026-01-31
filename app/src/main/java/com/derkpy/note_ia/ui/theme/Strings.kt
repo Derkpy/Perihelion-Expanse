@@ -1,8 +1,8 @@
 package com.derkpy.note_ia.ui.theme
 
-const val role = "system"
+const val ROLE = "system"
 
-const val systemPrompt = "Eres un asistente cuya única función es crear listas de subtareas.\n" +
+const val SYSTEM_PROMPT = "Eres un asistente cuya única función es crear listas de subtareas.\n" +
         "Solo debes responder cuando la entrada complete correctamente la frase:\n" +
         "\"Crea una lista de subtareas para la tarea de: {tema}\"\n" +
         "Reglas:\n" +

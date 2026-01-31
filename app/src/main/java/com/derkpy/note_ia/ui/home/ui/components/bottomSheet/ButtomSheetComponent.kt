@@ -12,13 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.derkpy.note_ia.ui.home.ui.components.bottomSheet.contentBottomSheet.BottonComponent
+import com.derkpy.note_ia.ui.home.ui.components.bottomSheet.contentBottomSheet.ButtonComponent
+import com.derkpy.note_ia.ui.theme.black
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheetComponent(
+fun ButtomSheetComponent(
                          mode : SheetMode? ,
                          onSave : () -> Unit,
+                         generateContent : () -> Unit,
                          content : @Composable () -> Unit
 ){
     /*
@@ -39,7 +41,8 @@ fun BottomSheetComponent(
 
             Text(
                 text = if (mode == SheetMode.NOTE) "Nueva Nota" else "Nueva Tarea",
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                color = black
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -58,7 +61,7 @@ fun BottomSheetComponent(
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            BottonComponent(onSave = onSave)
+            ButtonComponent(onSave = onSave, generateContent = generateContent)
 
             Spacer(modifier = Modifier.height(30.dp))
         }
