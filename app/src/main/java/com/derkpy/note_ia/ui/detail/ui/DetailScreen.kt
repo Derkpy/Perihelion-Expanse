@@ -53,7 +53,7 @@ fun DetailContent(viewModel: DetailViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(primaryOneLigth) // Color de fondo global
+            .background(primaryOneLigth)
     ) {
         Crossfade(
             targetState = state.isLoading,
@@ -174,7 +174,7 @@ fun Title(){
 @Composable
 fun TitleTask(text: String, enableTextField: Boolean, viewModel: DetailViewModel){
 
-    val keyboardController = LocalSoftwareKeyboardController.current
+    //val keyboardController = LocalSoftwareKeyboardController.current
 
     TextField(
         value = text,
@@ -192,7 +192,7 @@ fun TitleTask(text: String, enableTextField: Boolean, viewModel: DetailViewModel
 @Composable
 fun DescriptionTask(text: String, enableTextField: Boolean, viewModel: DetailViewModel){
 
-    val keyboardController = LocalSoftwareKeyboardController.current
+    //val keyboardController = LocalSoftwareKeyboardController.current
 
     TextField(
         value = text,
@@ -209,7 +209,7 @@ fun DescriptionTask(text: String, enableTextField: Boolean, viewModel: DetailVie
 @Composable
 fun SubTasks(subTasks: List<SubTaskModel>, enableTextField: Boolean, viewModel: DetailViewModel){
 
-    val keyboardController = LocalSoftwareKeyboardController.current
+    //val keyboardController = LocalSoftwareKeyboardController.current
 
     Column {
         subTasks.forEach { subtask ->

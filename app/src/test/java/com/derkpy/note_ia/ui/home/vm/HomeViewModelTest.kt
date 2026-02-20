@@ -198,6 +198,4 @@ class HomeViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
-
-
 }

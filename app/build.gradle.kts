@@ -6,10 +6,13 @@ plugins {
     alias(libs.plugins.crashlytics)
     alias(libs.plugins.jetbrainsKotlinSerialization)
     alias(libs.plugins.secretsGradlePlugin)
+    alias(libs.plugins.ktlint)
 }
 
 android {
+
     namespace = "com.derkpy.note_ia"
+
     compileSdk {
         version = release(36)
     }
@@ -20,7 +23,6 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -33,16 +35,24 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         buildConfig = true
         compose = true
+    }
+
+    ktlint{
+        android.set(true)
+        outputToConsole.set(true)
     }
 }
 
