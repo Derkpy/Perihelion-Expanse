@@ -33,13 +33,16 @@ jobs:
           echo "DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}" >> secrets.properties
           echo "WEB_CLIENT_ID=${{ secrets.WEB_CLIENT_ID }}" >> secrets.properties
 
+      - name: Create google-services.json
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > app/google-services.json
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
 
       - name: Build with gradle
         run: ./gradlew build
 
-      - name: Check Code whit Ktlint
+      - name: Check Code Style
         run: ./gradlew ktlintCheck
 
       - name: Run Unit Tests
