@@ -29,23 +29,26 @@ jobs:
         run: chmod +x gradlew
 
       - name: Create secrets.properties
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          WEB_CLIENT_ID: ${{ secrets.WEB_CLIENT_ID }}
         run: |
-          echo "DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}" >> secrets.properties
-          echo "WEB_CLIENT_ID=${{ secrets.WEB_CLIENT_ID }}" >> secrets.properties
+          cat > secrets.properties <<EOF
+          DEEPSEEK_API_KEY=$DEEPSEEK_API_KEY
+          WEB_CLIENT_ID=$WEB_CLIENT_ID
+          EOF
 
       - name: Create google-services.json
-        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -di > app/google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: printf '%s' "$GOOGLE_SERVICES_JSON" | base64 --decode > app/google-services.json
 
-      - name: Debug - verificar google-services.json
+      - name: Validate google-services.json
         run: |
-          echo "Tamaño del archivo:"
-          ls -lh app/google-services.json || echo "No se creó!"
-          echo ""
-          echo "Primeros caracteres (debe empezar con { ):"
-          head -c 21 app/google-services.json | cat -v || echo "Vacío"
-          echo ""
-          echo "Últimos caracteres (debe terminar con } ):"
-          tail -c 20 app/google-services.json | cat -v || true
+          if ! jq empty app/google-services.json >/dev/null 2>&1; then
+            echo "google-services.json no es JSON valido" >&2
+            exit 1
+          fi
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
